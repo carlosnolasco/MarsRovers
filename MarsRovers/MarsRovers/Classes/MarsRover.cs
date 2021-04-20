@@ -71,6 +71,7 @@ namespace MarsRovers.Classes
 
         public bool ProcessInstruction(char instruction)
         {
+            // Enum para acciones
             switch(instruction)
             {
                 case 'M':

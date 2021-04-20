@@ -7,6 +7,7 @@ namespace MarsRovers.Tests
     public class MarsRoverTest
     {
         [Theory]
+        // Comentario para explicar tests
         [InlineData(5, 5, 1, 2, 'N', "LMLMLMLMM", 1, 3, 'N', true)]
         [InlineData(5, 5, 3, 3, 'E', "MMRMMRMRRM", 5, 1, 'E', true)]
         [InlineData(3, 2, 1, 1, 'S', "LLMMR", 1, 2, 'N', false)]
@@ -29,11 +30,14 @@ namespace MarsRovers.Tests
                 if (!marsRover.ProcessInstruction(instruction)) break;
             }
 
+            // desglosar condicion
             bool lastPositionValid = marsRover.LastPosition.X == expectedX &&
                                      marsRover.LastPosition.Y == expectedY &&
                                      marsRover.LastPosition.Z == expectedZ;
-
+            // 
             Assert.True(lastPositionValid, "Mars Rover's last position does not correspond to expected position");
+
+            // Verifica que cumpla con el estatus esperado
             Assert.True(marsRover.Status == expectedStatus, "Mars Rover's status does not correspond to expected status");
         }
     }
