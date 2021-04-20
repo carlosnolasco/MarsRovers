@@ -1,0 +1,158 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to the Mars Rovers!</h1>
+</div>
+
+<div id="divBounds">
+    <p><b>Please specify the grid bounds</b></p>
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label>X</label>
+            <input type="number" min="1" class="form-control" id="xBound" />
+        </div>
+
+        <div class="form-group col-md-3">
+            <label>Y</label>
+            <input type="number" min="1" class="form-control" id="yBound" />
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <button class="btn btn-block btn-primary" onclick="setGrid()">Set grid</button>
+        </div>
+    </div>
+</div>
+
+<div hidden id="divRovers">
+    <p>
+        <b>
+            Please specify the initial values for the Rover(s) (notice that if a Rover goes out of the bounds, it will be lost)
+            and its instructions.
+        </b>
+    </p>
+
+    <div id="divRover">
+        <p><b>Initial position for Rover #<span id="roverNumber">1</span></b></p>
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label>X</label>
+                <input type="number" min="0" class="form-control" id="roverPosX" />
+            </div>
+
+            <div class="form-group col-md-3">
+                <label>Y</label>
+                <input type="number" min="0" class="form-control" id="roverPosY" />
+            </div>
+
+            <div class="form-group col-md-3">
+                <label>Orientation</label>
+                <select id="roverOrientation" class="form-control">
+                    <option value="N">N</option>
+                    <option value="E">E</option>
+                    <option value="S">S</option>
+                    <option value="W">W</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label>Instructions</label>
+                <textarea class="form-control" id="roverInstructions" oninput="filterInstructions(this)"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <button class="btn btn-block btn-secondary" onclick="setRover()">Save Rover</button>
+        </div>
+        <div class="form-group col-md-3">
+            <p>Click on this to save the current Rover and to add another one.</p>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <button class="btn btn-block btn-primary" onclick="process()">Process</button>
+        </div>
+        <div class="form-group col-md-3">
+            <p>Click on this to save the current Rover and initialize the process.</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var marsRovers = [];
+
+        function setGrid() {
+            var x = $('#xBound').val();
+            var y = $('#yBound').val();
+
+            if (x < 1 || y < 1) {
+                alert('Bounds must have to be greater than 0.');
+                return;
+            }
+
+            $('#divBounds').hide();
+            $('#divRovers').removeAttr('hidden');
+        }
+
+        function setRover() {
+            var x = $('#roverPosX');
+            var y = $('#roverPosY');
+            var z = $('#roverOrientation');
+            var instructions = $('#roverInstructions');
+
+            if (instructions.val().trim().length == 0) {
+                alert('Instructions are not valid');
+                return false;
+            }
+
+            marsRovers.push({
+                X: x.val(),
+                Y: y.val(),
+                Z: z.val(),
+                Instructions: instructions.val()
+            });
+
+            x.val('');
+            y.val('');
+            z.val('');
+            instructions.val('');
+            $('#roverNumber').text(marsRovers.length + 1);
+
+            return true;
+        }
+
+        function process() {
+            if (setRover()) {
+                $.ajax({
+                    url: '@Url.Action("Process")',
+                    method: 'POST',
+                    data: JSON.stringify({
+                        MarsRovers: marsRovers,
+                        LimitX: $('#xBound').val(),
+                        LimitY: $('#yBound').val()
+                    }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+        }
+
+        function filterInstructions(ev) {
+            var input = ev.value;
+            $(ev).val(input.replace(/[^LRM]+/gi, '').toUpperCase());
+        }
+    </script>
+}
