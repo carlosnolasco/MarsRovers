@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace MarsRovers.Classes
 {
-    public class Grid : IGrid
+    public class Position : IPosition
     {
-        public int LimitX { get; set; }
-        public int LimitY { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public char Z { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MarsRovers.Interfaces;
+﻿using MarsRovers.Classes;
+using MarsRovers.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ namespace MarsRovers.Models
 {
     public class SettingsModel
     {
-        public IGrid Grid { get; set; }
+        public Grid Grid { get; set; }
+        public List<MarsRoverModel> MarsRovers { get; set; }
     }
 }

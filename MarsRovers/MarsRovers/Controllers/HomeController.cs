@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MarsRovers.Controllers
@@ -24,23 +25,20 @@ namespace MarsRovers.Controllers
         }
 
         [HttpPost]
-        public JsonResult Process ([FromBody]Grid data)
+        public JsonResult Process (SettingsModel data)
         {
             List<MarsRover> marsRoverResults = new List<MarsRover>();
             foreach(var item in data.MarsRovers)
             {
-                foreach(char instruction in item.Instructions.ToCharArray())
+                MarsRover marsRover = new MarsRover(item, data.Grid);
+
+                var instructions = Regex.Replace(item.Instructions, "/[^LRM]+/gi", "").ToCharArray();
+
+                foreach(char instruction in instructions)
                 {
-                    if (instruction == 'M')
-                    {
-                        if (!data.MoveRoverForward(item.ID)) break;
-                    }
-                    else
-                    {
-                        data.RotateRover(item.ID, instruction);
-                    }
+                    if (!marsRover.ProcessInstruction(instruction)) break;
                 }
-                marsRoverResults.Add(item);
+                marsRoverResults.Add(marsRover);
             }
 
             return Json(marsRoverResults);
