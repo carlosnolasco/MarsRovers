@@ -28,16 +28,24 @@ namespace MarsRovers.Controllers
         public JsonResult Process (SettingsModel data)
         {
             List<MarsRover> marsRoverResults = new List<MarsRover>();
+
+            // Iterate all of the Rovers from the payload
             foreach(var item in data.MarsRovers)
             {
+                // Create a new instance of the MarsRover based on the view model
                 MarsRover marsRover = new MarsRover(item, data.Grid);
-
+                
+                // Filter the command list
                 var instructions = Regex.Replace(item.Instructions, "/[^LRM]+/gi", "").ToCharArray();
 
+                // Iterate each command in the command list
                 foreach(char instruction in instructions)
                 {
-                    if (!marsRover.ProcessInstruction(instruction)) break;
+                    // Perform the command and stop iteration if Rover gets out of the bounds
+                    if (!marsRover.PerformInstruction(instruction)) break;
                 }
+
+                // Add the Rover to result list
                 marsRoverResults.Add(marsRover);
             }
 
